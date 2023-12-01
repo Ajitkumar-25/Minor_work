@@ -84,12 +84,16 @@ app.get("/", function(req, res){
         label: -1,
         similarityScore: -1,
         finalMarks: -1,
-    });
+        sampleAns: "",
+        studentResp: "",
+            });
     });
 
   app.post('/predict', async (req, res) => {
     let studentResp = req.body.studentResp;
     let sampleAns = req.body.sampleAns;
+
+
     const dataToSend = {
       studentResp: studentResp,
       sampleAns: sampleAns
@@ -104,7 +108,9 @@ app.get("/", function(req, res){
         label: response.data['label'],
         similarityScore: response.data['similarity_score'],
         finalMarks: response.data['final_grade'],
-        questions: questions
+        questions: questions,
+        sampleAns: sampleAns,
+        studentResp: studentResp,
       });
     } catch (error) {
       console.error('Error sending data to Flask server:', error.message);

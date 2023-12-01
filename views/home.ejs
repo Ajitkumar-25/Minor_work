@@ -56,8 +56,7 @@
                             rows="4"
                             required="required"
                             data-error="Please, leave us a message.",
-                          >
-                        </textarea>
+                          ><%=sampleAns%></textarea>
                         </div>
                       </div>
                     </div>
@@ -73,7 +72,7 @@
                             rows="4"
                             required="required"
                             data-error="Please, leave us a message."
-                          ></textarea>
+                          ><%=studentResp%></textarea>
                         </div>
                       </div>
 
@@ -141,7 +140,7 @@ const answers = [
     "A simple graph is a graph that has not more than one edge between a pair of nodes than such a graph is called a simple graph.",
   ];
 
-
+  
 
         function myfunction(e){
           let selectedIndex = document.getElementById('form_need').value;
