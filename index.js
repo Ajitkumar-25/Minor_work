@@ -81,7 +81,9 @@ app.get("/", function(req, res){
     res.render("home",{
         questions: questions,
         grade: -1,
-        label: -1
+        label: -1,
+        similarityScore: -1,
+        finalMarks: -1,
     });
     });
 
@@ -100,6 +102,8 @@ app.get("/", function(req, res){
       res.render("home", {
         grade: response.data['grade'],
         label: response.data['label'],
+        similarityScore: response.data['similarity_score'],
+        finalMarks: response.data['final_grade'],
         questions: questions
       });
     } catch (error) {

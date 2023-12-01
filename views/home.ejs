@@ -11,7 +11,7 @@
   <body>
     <div class="container">
       <div class="text-center mt-5">
-        <h1>Marks Predictor</h1>
+        <h1 style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: 75px;">Short Answers Evaluator</h1>
       </div>
 
       <div class="row">
@@ -89,7 +89,9 @@
 
                       <div class="predict" style="margin-top: 10px; margin-left: 13px;">
                         <% if(grade!=-1) { %>
-                        <h3>Grade: <%= grade %></h3>
+                        <h3>Grade: <%= grade %></h3> 
+                        <h3>Cosine Similarity: <%= parseFloat(similarityScore).toFixed(2) %></h3> 
+                        <h3>Final Marks: <%=   parseFloat(finalMarks).toFixed(2) %></h3> 
                         <% } %>
                       </div>
                     </div>

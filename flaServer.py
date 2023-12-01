@@ -2,12 +2,19 @@ from flask import Flask, request, jsonify
 import requests
 import torch
 from transformers import BertModel
+from sklearn.metrics.pairwise import cosine_similarity
 from transformers import BertTokenizer, BertForSequenceClassification, AdamW
 app = Flask(__name__)
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForSequenceClassification.from_pretrained("my_bert_model")
 label_mapping = {0: 0, 0.5: 1, 1: 2, 1.5: 3, 2: 4, 2.5: 5}
+
+
+model_name = 'bert-base-uncased'
+model1 = BertModel.from_pretrained(model_name)
+tokenizer1 = BertTokenizer.from_pretrained(model_name)
+
 def predict_grade(sample_response, student_response, model, tokenizer):
     #model.eval()
 
@@ -44,6 +51,30 @@ def predict_grade(sample_response, student_response, model, tokenizer):
     return predicted_grade, predicted_label
 
 
+def get_bert_embeddings(text, model, tokenizer):
+    # Tokenize input text
+    input_ids = tokenizer.encode(text, return_tensors='pt')
+
+    # Get BERT model embeddings
+    with torch.no_grad():
+        outputs = model(input_ids)
+    
+    # Extract the embeddings for the [CLS] token
+    embeddings = outputs.last_hidden_state[:, 0, :].numpy()
+    
+    return embeddings
+
+
+def calculate_cosine_similarity(embedding1, embedding2):
+    # Reshape to (1, -1) to match the shape expected by cosine_similarity
+    embedding1 = embedding1.reshape(1, -1)
+    embedding2 = embedding2.reshape(1, -1)
+    
+    # Calculate cosine similarity
+    similarity = cosine_similarity(embedding1, embedding2)
+    
+    return similarity[0][0]
+
 
 @app.route('/')
 def hello_world():
@@ -61,7 +92,16 @@ def receive_data():
     
     print(f"Predicted Grade: {predicted_grade}")
     print(f"Predicted Label: {predicted_label}")
-    marks = {'grade':predicted_grade, 'label':predicted_label}
+
+    # Get BERT embeddings for the texts
+    embedding1 = get_bert_embeddings(data['sampleAns'], model1, tokenizer)
+    embedding2 = get_bert_embeddings(data['studentResp'], model1, tokenizer)
+
+    similarity_score = calculate_cosine_similarity(embedding1, embedding2)
+    print(f"Cosine Similarity Score: {similarity_score}")
+    print(f"Score after considering similarity: {similarity_score*predicted_grade}")
+
+    marks = {'grade':predicted_grade, 'label':predicted_label,'similarity_score':str(similarity_score),'final_grade':str(similarity_score*predicted_grade)}
     return jsonify(marks)
 
 if __name__ == '__main__':
